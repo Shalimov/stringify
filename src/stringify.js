@@ -53,8 +53,14 @@ var NODE_REQUIRE_OPTIONS = {};
  * @param   {string}    content
  * @returns {string}
  */
-function stringify (content) {
-  return 'module.exports = ' + JSON.stringify(content) + ';\n';
+function stringify (content, options) {
+  const escapedContent = JSON.stringify(content);
+
+  if (options.isTemplate) {
+    return 'module.exports = _.template(' + escapedContent + ');\n';
+  }
+  
+  return 'module.exports = ' + escapedContent + ';\n';
 }
 
 /**
@@ -206,7 +212,7 @@ function transformFn (contents, transformOptions, done) {
   var file = transformOptions.file,
       options = transformOptions.config;
 
-  done(null, stringify(minify(file, contents, options)));
+  done(null, stringify(minify(file, contents, options), options));
 }
 
 /**
